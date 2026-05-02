@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import sdisImg from "@/assets/sdis-cachet.jpg";
 import signImg from "@/assets/signature-president.jpg";
+import learnixBadge from "@/assets/learnix-badge.jpg";
 import { formatDate, formatDateLong } from "@/lib/date-utils";
 import type { Apprenant, DocumentGenere, Formation, Settings } from "@/lib/types";
 
@@ -12,11 +13,6 @@ interface Props {
   settings: Settings;
 }
 
-/**
- * Diplôme SSIAP A4 portrait — reproduction fidèle du template officiel HATHOUT PDF.
- * Dimensions canoniques : 794 x 1123 px (A4 portrait @ 96 dpi).
- * Exporté en PDF via html2canvas (échelle x2.5).
- */
 export function SsiapDiploma({ apprenant, formation, document, settings }: Props) {
   const [qrUrl, setQrUrl] = useState<string>("");
 
@@ -25,15 +21,26 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
     QRCode.toDataURL(verifyUrl, {
       errorCorrectionLevel: "H",
       margin: 1,
-      width: 160,
-      color: { dark: "#0a0a0a", light: "#ffffff" },
+      width: 120,
+      color: { dark: "#000000", light: "#ffffff" },
     }).then(setQrUrl);
   }, [document.numero, settings.verificationBaseUrl]);
 
   const ssiapLevel = formation.code.replace("SSIAP", "");
   const isSsiap = formation.code.startsWith("SSIAP");
 
-  const civilite = apprenant.civilite ?? "M.";
+  // Fallback sur les settings si le document n'a pas de valeur
+  const representantNom = document.representantNom || settings.representantNom || "";
+  const representantGrade = document.representantGrade || settings.representantGrade || "";
+  const presidentNom = document.presidentNom || settings.presidentNom || "";
+
+  const diplomeTitre = isSsiap
+    ? ssiapLevel === "1"
+      ? "DIPLÔME D'AGENT DES SERVICES DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
+      : ssiapLevel === "2"
+        ? "DIPLÔME DE CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE"
+        : "DIPLÔME DE CHEF DE SERVICE DE SÉCURITÉ INCENDIE"
+    : `DIPLÔME — ${formation.nom.toUpperCase()}`;
 
   return (
     <div
@@ -43,371 +50,302 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
         height: "1123px",
         position: "relative",
         background: "#ffffff",
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: "'Times New Roman', Georgia, serif",
         color: "#0a0a0a",
         overflow: "hidden",
         boxSizing: "border-box",
       }}
     >
-      {/* Bordure épaisse externe */}
-      <div
-        style={{
-          position: "absolute",
-          inset: "10px",
-          border: "3px solid #1a1a1a",
-          pointerEvents: "none",
-          zIndex: 10,
-        }}
-      />
-      {/* Bordure fine interne */}
-      <div
-        style={{
-          position: "absolute",
-          inset: "16px",
-          border: "1px solid #555",
-          pointerEvents: "none",
-          zIndex: 10,
-        }}
-      />
+      {/* ── Bordure externe bleue épaisse ── */}
+      <div style={{ position: "absolute", inset: "8px", border: "3px solid #1e3a6e", pointerEvents: "none", zIndex: 10 }} />
+      {/* ── Bordure interne bleue fine ── */}
+      <div style={{ position: "absolute", inset: "14px", border: "1.5px solid #1e3a6e", pointerEvents: "none", zIndex: 10 }} />
 
-      {/* Filigrane central — texte LEARNIX en arrière-plan */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%) rotate(-30deg)",
-          fontSize: "90px",
-          fontWeight: 900,
-          color: "rgba(185,28,28,0.04)",
-          letterSpacing: "0.2em",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      >
-        LEARNIX
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%) rotate(-30deg)",
-          fontSize: "44px",
-          fontWeight: 700,
-          color: "rgba(185,28,28,0.035)",
-          letterSpacing: "0.1em",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          pointerEvents: "none",
-          zIndex: 0,
-          marginTop: "80px",
-        }}
-      >
-        SÉCURITÉ INCENDIE ET D'ASSISTANCE
-      </div>
+      {/* ── Coins décoratifs ── */}
+      {[
+        { top: "18px", left: "18px" },
+        { top: "18px", right: "18px" },
+        { bottom: "18px", left: "18px" },
+        { bottom: "18px", right: "18px" },
+      ].map((pos, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            ...pos,
+            width: "14px",
+            height: "14px",
+            border: "2px solid #1e3a6e",
+            pointerEvents: "none",
+            zIndex: 11,
+          }}
+        />
+      ))}
 
-      {/* ────────── COLONNE GAUCHE : titre vertical ────────── */}
+      {/* ────────────────────── ZONE PRINCIPALE ────────────────────── */}
       <div
         style={{
           position: "absolute",
-          left: "22px",
-          top: "80px",
-          bottom: "80px",
-          width: "44px",
+          inset: "22px",
+          zIndex: 2,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 2,
+          flexDirection: "column",
         }}
       >
-        <div
-          style={{
-            transform: "rotate(-90deg)",
-            whiteSpace: "nowrap",
-            fontSize: "11px",
-            fontWeight: 700,
-            letterSpacing: "0.2em",
-            color: "#1a1a1a",
-            textTransform: "uppercase",
-          }}
-        >
-          DIPLOME D'AGENT DES SERVICES DE SECURITE INCENDIE ET D'ASSISTANCE A PERSONNES
-        </div>
-      </div>
+        {/* ══ HAUT : logo gauche | titre centre | photo droite ══ */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "0px", minHeight: "200px" }}>
 
-      {/* ────────── CONTENU PRINCIPAL ────────── */}
-      <div
-        style={{
-          position: "absolute",
-          left: "68px",
-          right: "24px",
-          top: "24px",
-          bottom: "24px",
-          zIndex: 2,
-        }}
-      >
-        {/* ZONE HAUTE : sceau + photo */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            paddingTop: "14px",
-          }}
-        >
-          {/* Sceau LEARNIX (gauche) */}
+          {/* ── Colonne LOGO LEARNIX ── */}
           <div
             style={{
-              width: "120px",
-              height: "120px",
-              borderRadius: "50%",
-              border: "2.5px solid #1a1a1a",
+              width: "185px",
+              flexShrink: 0,
+              paddingTop: "8px",
+              paddingRight: "18px",
+              borderRight: "2px solid #1e3a6e",
               display: "flex",
               flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              padding: "8px",
-              background: "#fff",
+              alignItems: "flex-start",
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: 900, letterSpacing: "0.1em", color: "#b91c1c" }}>LEARNIX</div>
-            <div style={{ fontSize: "7px", marginTop: "2px", color: "#333", lineHeight: 1.3, letterSpacing: "0.04em" }}>
-              ORGANISME DE FORMATION
+            {/* LX grand */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", lineHeight: 1 }}>
+              <span style={{ fontSize: "52px", fontWeight: 900, color: "#1e3a6e", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
+                L
+              </span>
+              <span style={{ fontSize: "42px", fontWeight: 900, color: "#1e3a6e", fontFamily: "Arial Black, sans-serif", lineHeight: 1, marginBottom: "2px" }}>
+                X
+              </span>
             </div>
-            <div style={{ width: "70%", height: "1px", background: "#1a1a1a", margin: "4px auto" }} />
-            <div style={{ fontSize: "6.5px", color: "#333", lineHeight: 1.35, letterSpacing: "0.03em" }}>
-              Formations incendie<br />
-              agréé SSIAP 1, 2, 3<br />
-              N° {settings.centreAgrement}
+            <div style={{ fontSize: "13px", fontWeight: 900, letterSpacing: "0.15em", color: "#1e3a6e", marginTop: "2px", fontFamily: "Arial, sans-serif" }}>
+              LEARNIX
+            </div>
+            <div style={{ fontSize: "7.5px", letterSpacing: "0.05em", color: "#444", marginTop: "1px", fontFamily: "Arial, sans-serif" }}>
+              DU GROUPE KELAL
+            </div>
+            <div style={{ width: "100%", height: "1px", background: "#1e3a6e", margin: "6px 0" }} />
+            <div style={{ fontSize: "8px", color: "#555", fontStyle: "italic", fontFamily: "'Times New Roman', serif" }}>
+              Ensemble apprenons l'excellence
             </div>
           </div>
 
-          {/* Photo candidat (droite) */}
-          {apprenant.photo ? (
-            <div
-              style={{
-                width: "110px",
-                height: "140px",
-                border: "2px solid #1a1a1a",
-                background: "#eee",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={apprenant.photo}
-                alt="photo candidat"
-                crossOrigin="anonymous"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-          ) : (
-            <div
-              style={{
-                width: "110px",
-                height: "140px",
-                border: "2px dashed #999",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "10px",
-                color: "#999",
-              }}
-            >
-              Photo
-            </div>
-          )}
-        </div>
-
-        {/* ── TITRE S.S.I.A.P. ── */}
-        <div style={{ textAlign: "center", marginTop: "22px" }}>
-          <div style={{ fontSize: "13px", fontWeight: 700, letterSpacing: "0.15em", color: "#1a1a1a" }}>
-            DIPLOME D'AGENT
-          </div>
-          <div style={{ fontSize: "13px", fontWeight: 700, letterSpacing: "0.12em", color: "#1a1a1a", marginTop: "2px" }}>
-            DES SERVICES DE SÉCURITÉ INCENDIE
-          </div>
-          <div style={{ fontSize: "13px", fontWeight: 700, letterSpacing: "0.12em", color: "#1a1a1a", marginTop: "2px" }}>
-            ET D'ASSISTANCE À PERSONNES
-          </div>
-
-          {isSsiap && (
-            <div
-              style={{
-                fontSize: "72px",
-                fontWeight: 900,
-                letterSpacing: "0.08em",
-                color: "#1a1a1a",
-                lineHeight: 1.05,
-                marginTop: "10px",
-                fontFamily: "Georgia, serif",
-              }}
-            >
-              S.S.I.A.P. {ssiapLevel}
-            </div>
-          )}
-
-          {!isSsiap && (
-            <div
-              style={{
-                fontSize: "38px",
-                fontWeight: 900,
-                letterSpacing: "0.06em",
-                color: "#1a1a1a",
-                lineHeight: 1.1,
-                marginTop: "10px",
-              }}
-            >
-              {formation.code}
-            </div>
-          )}
-        </div>
-
-        {/* ── CORPS OFFICIEL ── */}
-        <div
-          style={{
-            marginTop: "30px",
-            fontSize: "13.5px",
-            lineHeight: 1.65,
-            color: "#1a1a1a",
-            textAlign: "left",
-          }}
-        >
-          <p>
-            Vu le procès-verbal du Jury d'examen en date du{" "}
-            <strong>{formatDateLong(document.dateExamen)}</strong> déclarant que
-          </p>
-          <p style={{ marginTop: "6px" }}>
-            <strong>Nom : {apprenant.nom}</strong>
-            {"  "}
-            <strong>Prénom : {apprenant.prenom}</strong>
-          </p>
-          <p>
-            Né{apprenant.civilite === "Madame" ? "e" : ""} le{" "}
-            <strong>{formatDate(apprenant.dateNaissance)}</strong>
-            {apprenant.paysNaissance ? `, à ${apprenant.lieuNaissance} (${apprenant.paysNaissance})` : `, à ${apprenant.lieuNaissance}`}
-          </p>
-          <p style={{ marginTop: "8px" }}>
-            a subi avec succès les épreuves exigées pour l'obtention du
-          </p>
-          <p style={{ marginTop: "6px", fontWeight: 700, textTransform: "uppercase", fontSize: "13px" }}>
-            {isSsiap
-              ? ssiapLevel === "1"
-                ? "DIPLÔME D'AGENT DES SERVICES DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
-                : ssiapLevel === "2"
-                  ? "DIPLÔME DE CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
-                  : "DIPLÔME DE CHEF DE SERVICE DE SÉCURITÉ INCENDIE"
-              : `DIPLÔME — ${formation.nom.toUpperCase()}`}
-          </p>
-          <p style={{ marginTop: "6px" }}>
-            tel que défini dans l'arrêté du 02 mai 2005 modifié.
-          </p>
-        </div>
-
-        {/* ── NUMÉRO DIPLÔME ── */}
-        <div style={{ textAlign: "center", marginTop: "24px" }}>
+          {/* ── Titre central ── */}
           <div
             style={{
-              fontSize: "18px",
-              fontWeight: 900,
-              letterSpacing: "0.06em",
-              color: "#1a1a1a",
+              flex: 1,
+              paddingLeft: "22px",
+              paddingTop: "8px",
+              paddingRight: "12px",
             }}
           >
-            Diplôme n° {document.numero}
+            {/* Titre rouge */}
+            <div
+              style={{
+                fontSize: "15.5px",
+                fontWeight: 900,
+                color: "#b91c1c",
+                letterSpacing: "0.04em",
+                lineHeight: 1.3,
+                textTransform: "uppercase",
+                fontFamily: "Arial Black, sans-serif",
+              }}
+            >
+              DIPLOME D'AGENT DES SERVICES DE SECURITE INCENDIE ET D'ASSISTANCE A PERSONNES
+            </div>
+
+            {/* S.S.I.A.P. N */}
+            <div
+              style={{
+                fontSize: "28px",
+                fontWeight: 900,
+                color: "#b91c1c",
+                letterSpacing: "0.1em",
+                marginTop: "10px",
+                fontFamily: "Arial Black, sans-serif",
+              }}
+            >
+              {isSsiap ? `S.S.I.A.P.${ssiapLevel}` : formation.code}
+            </div>
+          </div>
+
+          {/* ── Photo candidat ── */}
+          <div style={{ flexShrink: 0 }}>
+            {apprenant.photo ? (
+              <div
+                style={{
+                  width: "105px",
+                  height: "130px",
+                  border: "2px solid #333",
+                  overflow: "hidden",
+                  background: "#eee",
+                }}
+              >
+                <img
+                  src={apprenant.photo}
+                  alt="photo candidat"
+                  crossOrigin="anonymous"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: "105px",
+                  height: "130px",
+                  border: "2px dashed #999",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "11px",
+                  color: "#999",
+                }}
+              >
+                Photo
+              </div>
+            )}
           </div>
         </div>
 
-        {/* ── LIEU / DATE ── */}
-        <div style={{ marginTop: "22px", fontSize: "14px", fontStyle: "italic" }}>
-          <strong>Fait à {document.lieu}, le {formatDateLong(document.dateExamen)}.</strong>
+        {/* ══ CORPS OFFICIEL ══ */}
+        <div style={{ marginTop: "26px", fontSize: "13.5px", lineHeight: 1.75, color: "#0a0a0a" }}>
+          <p>
+            Vu le procès-verbal du jury d'examen en date du{" "}
+            <strong>{formatDateLong(document.dateExamen)}</strong> déclarant que :
+          </p>
+
+          <p style={{ marginTop: "8px" }}>
+            Nom : <strong>{apprenant.nom}</strong>{"  "}
+            Prénom : <strong>{apprenant.prenom}</strong>,{" "}
+            Né{apprenant.civilite === "Mme" ? "e" : ""} le{" "}
+            <strong>{formatDate(apprenant.dateNaissance)}</strong> à{" "}
+            <strong>{apprenant.lieuNaissance}{apprenant.paysNaissance ? ` ${apprenant.paysNaissance}` : ""}</strong>.
+          </p>
+
+          <p style={{ marginTop: "10px" }}>
+            A subi avec succès les épreuves exigées pour l'obtention{" "}
+            <strong>
+              {isSsiap
+                ? `du ${diplomeTitre} tel que défini dans l'arrêté du 02 mai 2005 modifié.`
+                : diplomeTitre}
+            </strong>
+          </p>
         </div>
 
-        {/* ── SIGNATURES ── */}
+        {/* ══ NUMÉRO DIPLÔME ══ */}
+        <div style={{ marginTop: "20px", fontSize: "13.5px" }}>
+          Diplôme N° <strong style={{ letterSpacing: "0.05em" }}>{document.numero}</strong>
+        </div>
+
+        {/* ══ LIEU / DATE ══ */}
+        <div style={{ marginTop: "14px", fontSize: "13.5px" }}>
+          Fait à <strong>{document.lieu}</strong>, le <strong>{formatDateLong(document.dateObtention || document.dateExamen)}</strong>.
+        </div>
+
+        {/* ══ SIGNATURES ══ */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            marginTop: "28px",
-            gap: "20px",
+            marginTop: "30px",
+            gap: "16px",
+            flex: 1,
           }}
         >
-          {/* Directeur du Centre */}
+          {/* ── Président du Centre ── */}
           <div style={{ flex: 1, fontSize: "12px" }}>
-            <div style={{ fontWeight: 700, marginBottom: "4px" }}>Le Directeur du Centre,</div>
-            <div>Nom ; {document.presidentNom}</div>
-            <div style={{ marginTop: "4px" }}>Signature :</div>
-            <div style={{ marginTop: "6px", borderBottom: "1px solid #555", width: "140px", height: "50px", display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: "12.5px",
+                textDecoration: "underline",
+                marginBottom: "8px",
+                fontFamily: "Arial, sans-serif",
+                textTransform: "uppercase",
+              }}
+            >
+              LE PRESIDENT DU CENTRE DE FORMATION
+            </div>
+            <div style={{ marginBottom: "4px" }}>{presidentNom}</div>
+            <div style={{ marginBottom: "8px" }}>SIGNATURE</div>
+
+            {/* Signature + cachet */}
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
               <img
                 src={signImg}
                 alt="signature"
                 crossOrigin="anonymous"
-                style={{ height: "42px", objectFit: "contain" }}
+                style={{ height: "56px", objectFit: "contain" }}
+              />
+              <img
+                src={learnixBadge}
+                alt="cachet learnix"
+                crossOrigin="anonymous"
+                style={{ height: "64px", objectFit: "contain" }}
               />
             </div>
           </div>
 
-          {/* QR code vérification — centré */}
+          {/* ── QR code centré ── */}
           {qrUrl && (
-            <div style={{ textAlign: "center", fontSize: "8px", flexShrink: 0 }}>
-              <img src={qrUrl} alt="QR" style={{ width: "72px", height: "72px", display: "block", margin: "0 auto" }} />
-              <div style={{ color: "#b91c1c", fontWeight: 700, marginTop: "3px", letterSpacing: "0.05em" }}>
-                CERTIFIÉ LEARNIX
-              </div>
+            <div style={{ textAlign: "center", flexShrink: 0, fontSize: "7.5px", color: "#555" }}>
+              <img src={qrUrl} alt="QR vérification" style={{ width: "64px", height: "64px", display: "block", margin: "0 auto" }} />
+              <div style={{ marginTop: "3px", fontFamily: "Arial, sans-serif" }}>Vérification</div>
             </div>
           )}
 
-          {/* Représentant SDIS */}
-          <div style={{ flex: 1, fontSize: "12px", textAlign: "right" }}>
-            <div style={{ fontWeight: 700, marginBottom: "4px" }}>Le représentant du service d'incendie compétent,</div>
-            <div>Nom : {document.representantNom}</div>
-            <div>Grade : {document.representantGrade}</div>
+          {/* ── Représentant SDIS — box pointillée ── */}
+          <div
+            style={{
+              flex: 1,
+              border: "1.5px dashed #333",
+              padding: "10px 12px",
+              fontSize: "12px",
+              lineHeight: 1.6,
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: "6px", fontSize: "12px" }}>
+              Le Représentant du Service incendie et<br />
+              de secours compétent,
+            </div>
+            <div>Nom : <span style={{ fontStyle: "italic" }}>{representantNom}</span></div>
+            <div>Grade : <span style={{ fontStyle: "italic" }}>{representantGrade}</span></div>
             <div style={{ marginTop: "4px" }}>Signature :</div>
-            <div style={{ marginTop: "6px", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "8px" }}>
+            <div style={{ marginTop: "6px" }}>
               <img
                 src={sdisImg}
                 alt="cachet SDIS"
                 crossOrigin="anonymous"
-                style={{ height: "56px", objectFit: "contain", opacity: 0.92 }}
+                style={{ height: "60px", objectFit: "contain" }}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* ────────── FOOTER LÉGAL ────────── */}
+      {/* ────────── FOOTER ────────── */}
       <div
         style={{
           position: "absolute",
-          left: "24px",
-          right: "24px",
-          bottom: "24px",
-          borderTop: "1.5px solid #1a1a1a",
-          paddingTop: "8px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: "9px",
+          left: "22px",
+          right: "22px",
+          bottom: "22px",
+          borderTop: "1px solid #1e3a6e",
+          paddingTop: "6px",
+          fontSize: "8.5px",
           color: "#1a1a1a",
+          textAlign: "center",
           zIndex: 5,
+          fontFamily: "Arial, sans-serif",
         }}
       >
-        <div>
-          <div style={{ fontWeight: 700 }}>
-            LEARNIX — {settings.centreAdresse}
-          </div>
-          <div>
-            Tél : {settings.centreTel} — E-mail : {settings.centreEmail}
-          </div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div>Déclaration N° {settings.centreDeclaration}</div>
-          <div>Siret : {settings.centreSiret}</div>
-        </div>
+        <span style={{ fontWeight: 700 }}>
+          LEARNIX Organisme de formation Formations incendie agrée SSIAP 1, 2, 3 sous le n° d'agrément : {settings.centreAgrement}
+        </span>
+        <br />
+        Déclaration d'existence N° {settings.centreDeclaration} · Siret : {settings.centreSiret}
+        <br />
+        Tél : {settings.centreTel} · E-mail : {settings.centreEmail}
       </div>
     </div>
   );

@@ -1,0 +1,187 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Learnix Certify — Design system premium
+ * Palette : noir profond / ivoire / rouge Learnix / or discret
+ * Tous les tokens en oklch.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-gold: var(--gold);
+  --color-ivory: var(--ivory);
+  --color-ink: var(--ink);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Surfaces */
+  --background: oklch(0.985 0.005 80);          /* ivoire très clair */
+  --foreground: oklch(0.18 0.015 270);          /* encre noir bleuté */
+  --ink: oklch(0.14 0.01 270);
+  --ivory: oklch(0.985 0.005 80);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.015 270);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.015 270);
+
+  /* Brand : rouge Learnix profond */
+  --primary: oklch(0.46 0.19 27);
+  --primary-foreground: oklch(0.985 0.005 80);
+
+  --secondary: oklch(0.95 0.01 80);
+  --secondary-foreground: oklch(0.18 0.015 270);
+  --muted: oklch(0.96 0.008 80);
+  --muted-foreground: oklch(0.48 0.02 270);
+  --accent: oklch(0.94 0.015 60);
+  --accent-foreground: oklch(0.18 0.015 270);
+
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: oklch(0.985 0.005 80);
+
+  --success: oklch(0.62 0.15 145);
+  --warning: oklch(0.75 0.16 75);
+
+  --border: oklch(0.9 0.01 80);
+  --input: oklch(0.92 0.01 80);
+  --ring: oklch(0.46 0.19 27);
+
+  /* Or discret pour accents */
+  --gold: oklch(0.74 0.12 80);
+
+  /* Sidebar — noir premium */
+  --sidebar: oklch(0.16 0.012 270);
+  --sidebar-foreground: oklch(0.92 0.005 80);
+  --sidebar-primary: oklch(0.46 0.19 27);
+  --sidebar-primary-foreground: oklch(0.985 0.005 80);
+  --sidebar-accent: oklch(0.22 0.012 270);
+  --sidebar-accent-foreground: oklch(0.985 0.005 80);
+  --sidebar-border: oklch(0.25 0.012 270);
+  --sidebar-ring: oklch(0.46 0.19 27);
+
+  /* Gradients & ombres premium */
+  --gradient-gold: linear-gradient(135deg, oklch(0.82 0.12 85), oklch(0.65 0.13 70));
+  --gradient-red: linear-gradient(135deg, oklch(0.5 0.2 27), oklch(0.38 0.18 25));
+  --gradient-ink: linear-gradient(180deg, oklch(0.16 0.012 270), oklch(0.1 0.012 270));
+  --shadow-elegant: 0 10px 30px -10px oklch(0.18 0.015 270 / 0.18);
+  --shadow-card: 0 1px 3px oklch(0.18 0.015 270 / 0.06), 0 4px 12px oklch(0.18 0.015 270 / 0.04);
+}
+
+.dark {
+  --background: oklch(0.14 0.012 270);
+  --foreground: oklch(0.95 0.005 80);
+  --card: oklch(0.18 0.012 270);
+  --card-foreground: oklch(0.95 0.005 80);
+  --popover: oklch(0.18 0.012 270);
+  --popover-foreground: oklch(0.95 0.005 80);
+  --primary: oklch(0.6 0.2 27);
+  --primary-foreground: oklch(0.985 0.005 80);
+  --secondary: oklch(0.24 0.012 270);
+  --secondary-foreground: oklch(0.95 0.005 80);
+  --muted: oklch(0.24 0.012 270);
+  --muted-foreground: oklch(0.7 0.01 270);
+  --accent: oklch(0.24 0.012 270);
+  --accent-foreground: oklch(0.95 0.005 80);
+  --destructive: oklch(0.65 0.2 27);
+  --destructive-foreground: oklch(0.985 0.005 80);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.6 0.2 27);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .font-serif { font-family: var(--font-serif); }
+}
+
+/* === Utilitaires diplôme === */
+.diploma-paper {
+  background:
+    radial-gradient(ellipse at top left, oklch(0.99 0.005 80) 0%, oklch(0.97 0.008 75) 100%);
+  position: relative;
+}
+.diploma-paper::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'><g fill='none' stroke='%23000' stroke-opacity='0.025' stroke-width='1'><circle cx='200' cy='200' r='180'/><circle cx='200' cy='200' r='140'/><circle cx='200' cy='200' r='100'/></g></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+  pointer-events: none;
+}
+.text-gold { color: var(--gold); }
+.bg-gold { background-color: var(--gold); }
+.border-gold { border-color: var(--gold); }
+.bg-gradient-gold { background: var(--gradient-gold); }
+.bg-gradient-red { background: var(--gradient-red); }
+.bg-gradient-ink { background: var(--gradient-ink); }
+.shadow-elegant { box-shadow: var(--shadow-elegant); }
+.shadow-card-soft { box-shadow: var(--shadow-card); }
+
+/* Coin décoratif rouge/or pour le diplôme */
+.corner-decor {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+}
+.corner-tl {
+  top: 0; left: 0;
+  background: linear-gradient(135deg, oklch(0.4 0.18 27) 0%, oklch(0.4 0.18 27) 50%, transparent 51%);
+  border-top: 4px solid var(--gold);
+  border-left: 4px solid var(--gold);
+}
+.corner-br {
+  bottom: 0; right: 0;
+  background: linear-gradient(315deg, oklch(0.4 0.18 27) 0%, oklch(0.4 0.18 27) 50%, transparent 51%);
+  border-bottom: 4px solid var(--gold);
+  border-right: 4px solid var(--gold);
+}

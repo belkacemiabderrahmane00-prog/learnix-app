@@ -9,6 +9,93 @@ import type {
 import { supabase } from "./supabase";
 import seedPhoto from "@/assets/seed-photo.jpg";
 
+// Formations par défaut (utilisées si Supabase est vide / inaccessible)
+const defaultFormations: Formation[] = [
+  {
+    id: "f1000000-0000-0000-0000-000000000001",
+    code: "SSIAP1",
+    nom: "SSIAP 1 — Agent de Sécurité Incendie et d'Assistance à Personnes",
+    type: "diplome", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Agent de Sécurité Incendie et d'Assistance à Personnes",
+    texteOfficiel: "Vu le procès-verbal du Jury d'examen en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A subi avec succès les épreuves exigées pour l'obtention du DIPLÔME D'AGENT DES SERVICES DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES tel que défini dans l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000002",
+    code: "SSIAP2",
+    nom: "SSIAP 2 — Chef d'Équipe de Sécurité Incendie",
+    type: "diplome", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Chef d'Équipe de Sécurité Incendie",
+    texteOfficiel: "Vu le procès-verbal du Jury d'examen en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A subi avec succès les épreuves exigées pour l'obtention du DIPLÔME DE CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES tel que défini dans l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000003",
+    code: "SSIAP3",
+    nom: "SSIAP 3 — Chef de Service de Sécurité Incendie",
+    type: "diplome", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Chef de Service de Sécurité Incendie",
+    texteOfficiel: "Vu le procès-verbal du Jury d'examen en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A subi avec succès les épreuves exigées pour l'obtention du DIPLÔME DE CHEF DE SERVICE DE SÉCURITÉ INCENDIE tel que défini dans l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000011",
+    code: "RECYCLAGE1",
+    nom: "Recyclage SSIAP 1 — Agent de Sécurité Incendie et d'Assistance à Personnes",
+    type: "attestation", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Recyclage — Agent de Sécurité Incendie et d'Assistance à Personnes",
+    texteOfficiel: "Vu le procès-verbal du Jury en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A suivi avec succès la formation de RECYCLAGE SSIAP 1 conformément à l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000012",
+    code: "RECYCLAGE2",
+    nom: "Recyclage SSIAP 2 — Chef d'Équipe de Sécurité Incendie",
+    type: "attestation", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Recyclage — Chef d'Équipe de Sécurité Incendie",
+    texteOfficiel: "Vu le procès-verbal du Jury en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A suivi avec succès la formation de RECYCLAGE SSIAP 2 conformément à l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000013",
+    code: "RECYCLAGE3",
+    nom: "Recyclage SSIAP 3 — Chef de Service de Sécurité Incendie",
+    type: "attestation", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Recyclage — Chef de Service de Sécurité Incendie",
+    texteOfficiel: "Vu le procès-verbal du Jury en date du {{date_examen}} déclarant que Nom : {{nom}}  Prénom : {{prenom}}, Né le {{date_naissance}}, à {{lieu_naissance}}. A suivi avec succès la formation de RECYCLAGE SSIAP 3 conformément à l'arrêté du 02 mai 2005 modifié.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000004",
+    code: "CQPAPS",
+    nom: "TFP APS — Titre à Finalité Professionnelle Agent de Prévention et de Sécurité",
+    type: "diplome", dureeValiditeMois: 0, templateId: "cqp-aps",
+    orientation: "landscape", actif: true,
+    sousTitre: "Agent de Prévention et de Sécurité",
+    texteOfficiel: "Procès-verbal du jury d'examen en date du {{date_examen}} à la suite de la formation Titre Agent de Prévention et de Sécurité du {{date_debut}} au {{date_fin}}.",
+    rncp: "RNCP37035", niveauRncp: "Niveau 3", codeNsf: "344t",
+    certificateurNom: "IESC Formation", certificateurRepresentant: "Dino Brunori",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000005",
+    code: "SST",
+    nom: "SST — Sauveteur Secouriste du Travail",
+    type: "certificat", dureeValiditeMois: 24, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Sauveteur Secouriste du Travail",
+    texteOfficiel: "A suivi avec succès la formation de Sauveteur Secouriste du Travail conformément au programme de l'INRS.",
+  },
+  {
+    id: "f1000000-0000-0000-0000-000000000006",
+    code: "H0B0",
+    nom: "H0B0 — Habilitation Électrique Personnel Non Électricien",
+    type: "attestation", dureeValiditeMois: 36, templateId: "ssiap-portrait",
+    orientation: "portrait", actif: true,
+    sousTitre: "Habilitation Électrique pour Personnel Non Électricien",
+    texteOfficiel: "A suivi avec succès la formation à la prévention des risques électriques pour personnel non électricien conformément à la norme NF C 18-510.",
+  },
+];
+
 interface AppState {
   apprenants: Apprenant[];
   formations: Formation[];
@@ -176,7 +263,7 @@ function rowToSettings(r: Record<string, unknown>): Settings {
 
 export const useStore = create<AppState>()((set, get) => ({
   apprenants: [],
-  formations: [],
+  formations: defaultFormations,
   documents: [],
   history: [],
   settings: defaultSettings,
@@ -197,9 +284,11 @@ export const useStore = create<AppState>()((set, get) => ({
       supabase.from("parametres").select("*").eq("id", 1).single(),
     ]);
 
+    const loadedFormations = (formations ?? []).map(rowToFormation);
+
     set({
       apprenants: (apprenants ?? []).map(rowToApprenant),
-      formations: (formations ?? []).map(rowToFormation),
+      formations: loadedFormations.length > 0 ? loadedFormations : defaultFormations,
       documents: (documents ?? []).map(rowToDocument),
       history: (historique ?? []).map((r: Record<string, unknown>) => ({
         id: r.id as string,
@@ -332,11 +421,29 @@ export const useStore = create<AppState>()((set, get) => ({
     if (!user) return "";
     // Call the Supabase function
     const agrement = get().settings.centreAgrement;
-    const { data } = await supabase.rpc("next_diploma_number", {
+    const { data, error } = await supabase.rpc("next_diploma_number", {
       p_formation_code: formationCode,
       p_agrement: agrement,
     });
-    return (data as string) ?? "";
+    if (error || !data) {
+      // Fallback local si la fonction RPC n'est pas disponible
+      const year = new Date().getFullYear();
+      if (formationCode === "CQPAPS") {
+        const count = get().documents.filter((d) => d.formationId?.includes("000000000004")).length;
+        return `0112-${year}-${String(count + 1).padStart(5, "0")}`;
+      }
+      const codeMap: Record<string, string> = {
+        SSIAP1: "1", SSIAP2: "2", SSIAP3: "3",
+        RECYCLAGE1: "1", RECYCLAGE2: "2", RECYCLAGE3: "3",
+        SST: "4", H0B0: "5",
+      };
+      const codeNum = codeMap[formationCode] ?? "9";
+      const existing = get().documents.filter((d) => d.numero.includes(`-${codeNum}-${year}-`));
+      const next = (existing.length + 36).toString().padStart(5, "0");
+      const agrRep = agrement.replace("/", "-");
+      return `${agrRep}-${codeNum}-${year}-${next}`;
+    }
+    return data as string;
   },
 }));
 

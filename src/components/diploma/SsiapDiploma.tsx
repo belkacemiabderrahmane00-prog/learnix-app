@@ -26,21 +26,36 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
     }).then(setQrUrl);
   }, [document.numero, settings.verificationBaseUrl]);
 
-  const ssiapLevel = formation.code.replace("SSIAP", "");
-  const isSsiap = formation.code.startsWith("SSIAP");
+  const isRecyclage = formation.code.startsWith("RECYCLAGE");
+  const isSsiap = formation.code.startsWith("SSIAP") || isRecyclage;
+  const ssiapLevel = isRecyclage
+    ? formation.code.replace("RECYCLAGE", "")
+    : formation.code.replace("SSIAP", "");
 
   // Fallback sur les settings si le document n'a pas de valeur
   const representantNom = document.representantNom || settings.representantNom || "";
   const representantGrade = document.representantGrade || settings.representantGrade || "";
   const presidentNom = document.presidentNom || settings.presidentNom || "";
 
-  const diplomeTitre = isSsiap
+  const titrePrincipal = isRecyclage
+    ? `RECYCLAGE SSIAP ${ssiapLevel}`
+    : isSsiap
+      ? `S.S.I.A.P.${ssiapLevel}`
+      : formation.code;
+
+  const diplomeTitre = isRecyclage
     ? ssiapLevel === "1"
-      ? "DIPLÔME D'AGENT DES SERVICES DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
+      ? "ATTESTATION DE RECYCLAGE SSIAP 1 — AGENT DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
       : ssiapLevel === "2"
-        ? "DIPLÔME DE CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE"
-        : "DIPLÔME DE CHEF DE SERVICE DE SÉCURITÉ INCENDIE"
-    : `DIPLÔME — ${formation.nom.toUpperCase()}`;
+        ? "ATTESTATION DE RECYCLAGE SSIAP 2 — CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE"
+        : "ATTESTATION DE RECYCLAGE SSIAP 3 — CHEF DE SERVICE DE SÉCURITÉ INCENDIE"
+    : isSsiap
+      ? ssiapLevel === "1"
+        ? "DIPLÔME D'AGENT DES SERVICES DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
+        : ssiapLevel === "2"
+          ? "DIPLÔME DE CHEF D'ÉQUIPE DE SÉCURITÉ INCENDIE ET D'ASSISTANCE À PERSONNES"
+          : "DIPLÔME DE CHEF DE SERVICE DE SÉCURITÉ INCENDIE"
+      : `DIPLÔME — ${formation.nom.toUpperCase()}`;
 
   return (
     <div
@@ -153,10 +168,10 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
               DIPLOME D'AGENT DES SERVICES DE SECURITE INCENDIE ET D'ASSISTANCE A PERSONNES
             </div>
 
-            {/* S.S.I.A.P. N */}
+            {/* S.S.I.A.P. N ou RECYCLAGE */}
             <div
               style={{
-                fontSize: "28px",
+                fontSize: isRecyclage ? "22px" : "28px",
                 fontWeight: 900,
                 color: "#b91c1c",
                 letterSpacing: "0.1em",
@@ -164,7 +179,7 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
                 fontFamily: "Arial Black, sans-serif",
               }}
             >
-              {isSsiap ? `S.S.I.A.P.${ssiapLevel}` : formation.code}
+              {titrePrincipal}
             </div>
           </div>
 
@@ -222,12 +237,10 @@ export function SsiapDiploma({ apprenant, formation, document, settings }: Props
           </p>
 
           <p style={{ marginTop: "10px" }}>
-            A subi avec succès les épreuves exigées pour l'obtention{" "}
-            <strong>
-              {isSsiap
-                ? `du ${diplomeTitre} tel que défini dans l'arrêté du 02 mai 2005 modifié.`
-                : diplomeTitre}
-            </strong>
+            {isRecyclage
+              ? <>A suivi avec succès la formation de <strong>{diplomeTitre}</strong> conformément à l'arrêté du 02 mai 2005 modifié.</>
+              : <>A subi avec succès les épreuves exigées pour l'obtention <strong>du {diplomeTitre} tel que défini dans l'arrêté du 02 mai 2005 modifié.</strong></>
+            }
           </p>
         </div>
 

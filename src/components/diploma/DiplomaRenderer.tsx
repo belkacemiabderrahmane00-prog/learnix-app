@@ -18,5 +18,9 @@ export function DiplomaRenderer(props: Props) {
 
 /** Returns whether the formation renders in landscape (true) or portrait (false) */
 export function isLandscapeFormation(formation: Formation): boolean {
-  return formation.orientation === "landscape" || formation.templateId === "cqp-aps";
+  return (
+    formation.orientation === "landscape" ||
+    formation.templateId === "cqp-aps" ||
+    formation.templateId === "ssiap-landscape"
+  );
 }

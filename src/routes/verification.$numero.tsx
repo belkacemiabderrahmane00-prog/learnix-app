@@ -45,8 +45,8 @@ function VerificationPage() {
         .single();
 
       if (data) {
-        const a = data.apprenants as Record<string, string> | null;
-        const f = data.formations as Record<string, string> | null;
+        const a = data.apprenants as unknown as Record<string, string> | null;
+        const f = data.formations as unknown as Record<string, string> | null;
         // parametres is a single row joined — may be array or object depending on version
         const p = Array.isArray(data.parametres)
           ? (data.parametres[0] as Record<string, string>)
